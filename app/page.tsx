@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
 import { AnimatePresence } from "framer-motion"
 import { useLanguage } from "@/hooks/use-language"
 import * as enData from "@/lib/siteData"
@@ -23,6 +23,7 @@ export default function Portfolio() {
   const [contactOpen, setContactOpen] = useState(false)
   const [showGhost, setShowGhost] = useState(false)
   const { language, setLanguage } = useLanguage()
+  const isLandingRef = useRef(true)
 
   const data = language === "it" ? itData : enData
 
@@ -41,24 +42,32 @@ export default function Portfolio() {
   }, [darkMode])
 
   // Scroll tracking: navbar visibility + ghost easter egg
+  // Uses a ref to avoid re-subscribing the listener on every scroll
   useEffect(() => {
+    let ticking = false
+
     const handleScroll = () => {
-      const scrollY = window.scrollY
-      const wasLandingPage = isLandingPage
-      const nowLandingPage = scrollY < 100
+      if (ticking) return
+      ticking = true
 
-      setIsLandingPage(nowLandingPage)
+      requestAnimationFrame(() => {
+        const scrollY = window.scrollY
+        const wasLanding = isLandingRef.current
+        const nowLanding = scrollY < 100
 
-      if (wasLandingPage && !nowLandingPage) {
-        setShowGhost(true)
-      } else if (!wasLandingPage && nowLandingPage) {
-        setShowGhost(false)
-      }
+        if (wasLanding !== nowLanding) {
+          isLandingRef.current = nowLanding
+          setIsLandingPage(nowLanding)
+          setShowGhost(!nowLanding)
+        }
+
+        ticking = false
+      })
     }
 
     window.addEventListener("scroll", handleScroll, { passive: true })
     return () => window.removeEventListener("scroll", handleScroll)
-  }, [isLandingPage])
+  }, [])
 
   const toggleDarkMode = useCallback(() => setDarkMode((prev) => !prev), [])
   const openContact = useCallback(() => setContactOpen(true), [])

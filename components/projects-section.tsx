@@ -271,7 +271,7 @@ export function ProjectsSection({ data, language }: ProjectsSectionProps) {
                 }`}
                 ref={setEmblaViewportRef}
               >
-                <div className="flex">
+                <div className="flex py-2">
                   {data.map((project, index) => (
                     <div
                       key={`${project.title}-${index}`}

@@ -20,6 +20,7 @@ interface Particle {
 export default function Btn03({
   className,
   particleCount = 12,
+  attractRadius: _attractRadius,
   ...props
 }: Btn03Props) {
   const [isAttracting, setIsAttracting] = useState(false)
