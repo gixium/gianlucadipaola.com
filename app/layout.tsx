@@ -1,75 +1,63 @@
-import "./globals.css";
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import type React from "react";
+import "./globals.css"
+import type { Metadata, Viewport } from "next"
+import { Inter } from "next/font/google"
+import type { ReactNode } from "react"
 import { LanguageProvider } from "@/hooks/use-language"
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"] })
 
 export const metadata: Metadata = {
-  title: "Gianluca Di Paola - Ingegnere Informatico | Politecnico di Milano",
-  description: "Portfolio professionale: progetti, competenze ed esperienze nel campo dell'ingegneria e dell'informatica.",
-  keywords: ["portfolio", "software engineering", "politecnico milano", "studente", "sviluppatore", "ingegnere", "ingegnere informatico", "milano", "palermo", "gianluca di paola", "gianluca", "paola"],
+  metadataBase: new URL("https://gianlucadipaola.com"),
+  title: "Gianluca Di Paola — Computer Engineer | Politecnico di Milano",
+  description:
+    "Portfolio professionale: progetti, competenze ed esperienze nel campo dell'ingegneria e dell'informatica.",
+  keywords: [
+    "portfolio",
+    "software engineering",
+    "computer engineering",
+    "politecnico milano",
+    "gianluca di paola",
+    "sviluppatore",
+    "ingegnere informatico",
+  ],
   authors: [{ name: "Gianluca Di Paola", url: "https://gianlucadipaola.com" }],
-
   openGraph: {
-    title: "Gianluca Di Paola - Ingegnere Informatico | Politecnico di Milano",
-    description: "Portfolio professionale: progetti, competenze ed esperienze nel campo dell'ingegneria informatica.",
+    title: "Gianluca Di Paola — Computer Engineer | Politecnico di Milano",
+    description:
+      "Portfolio professionale: progetti, competenze ed esperienze nel campo dell'ingegneria informatica.",
     url: "https://gianlucadipaola.com",
-    siteName: "gianlucadipaola.com",
+    siteName: "Gianluca Di Paola",
     images: [
       {
-        url: "https://images.unsplash.com/photo-1531297484001-80022131f5a1?q=80&w=1420&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+        url: "/preview.jpg",
         width: 1200,
         height: 630,
-        alt: "Preview Image",
+        alt: "Gianluca Di Paola — Portfolio Preview",
       },
     ],
     locale: "it_IT",
     type: "website",
   },
-  // twitter: {
-  //   card: "summary_large_image",
-  //   site: "@mio_handle",
-  //   creator: "@mio_handle",
-  //   title: "Il mio portfolio",
-  //   description: "La descrizione Twitter del sito.",
-  //   images: ["https://www.example.com/twitter.png"], 
-  // },
   robots: {
     index: true,
     follow: true,
     googleBot: {
       index: true,
-      follow: false,
-      noimageindex: true,
-      "max-video-preview": "standard",
+      follow: true,
     },
   },
-  viewport: {
-    width: "device-width",
-    initialScale: 1.0,
-    maximumScale: 1.0,
-  },
-  // verification: {
-  //   google: "google_verification_token",
-  //   yandex: "yandex_verification_token",
-  //   yahoo: "yahoo_verification_token",
-  //   other: {
-  //     me: ["mail@example.com", "123456789"],
-  //   },
-  // },
-};
+}
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+}
+
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="it" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning>
       <body className={inter.className}>
-          <LanguageProvider>{children}</LanguageProvider>
+        <LanguageProvider>{children}</LanguageProvider>
       </body>
     </html>
   )

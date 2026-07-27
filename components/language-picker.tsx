@@ -49,15 +49,15 @@ export function LanguagePicker({
       e.preventDefault()
     }
     if (e.key === "ArrowRight") {
-      const newCode = LANGS[Math.min(max, activeIndex + 1)].code
-      setLang(newCode)
+      const lang = LANGS[Math.min(max, activeIndex + 1)]
+      if (lang) setLang(lang.code)
     }
     if (e.key === "ArrowLeft") {
-      const newCode = LANGS[Math.max(0, activeIndex - 1)].code
-      setLang(newCode)
+      const lang = LANGS[Math.max(0, activeIndex - 1)]
+      if (lang) setLang(lang.code)
     }
-    if (e.key === "Home") setLang(LANGS[0].code)
-    if (e.key === "End") setLang(LANGS[max].code)
+    if (e.key === "Home") setLang(LANGS[0]!.code)
+    if (e.key === "End") setLang(LANGS[max]!.code)
   }
 
   const getTextWidth = (text: string) => {
@@ -79,7 +79,8 @@ export function LanguagePicker({
   const getIndicatorPosition = () => {
     let position = 0
     for (let i = 0; i < activeIndex; i++) {
-      const currentWidth = expandedLang === LANGS[i].code ? getButtonWidth(LANGS[i].code) : 40
+      const langItem = LANGS[i]
+      const currentWidth = langItem && expandedLang === langItem.code ? getButtonWidth(langItem.code) : 40
       position += currentWidth + 4
     }
     return position

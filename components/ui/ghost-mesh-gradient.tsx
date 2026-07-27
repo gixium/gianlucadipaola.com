@@ -147,7 +147,7 @@ export function GhostMeshGradient({ isDarkMode }: GhostMeshGradientProps) {
     const onTouchStart = (e: TouchEvent) => {
       const touch = e.touches[0]
       const rect = containerRef.current?.getBoundingClientRect()
-      if (!rect) return
+      if (!rect || !touch) return
       const cx = rect.left + rect.width / 2
       const cy = rect.top + rect.height / 2
       const dx = touch.clientX - cx

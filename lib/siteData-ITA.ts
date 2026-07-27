@@ -1,12 +1,19 @@
-import { GraduationCap, Briefcase, Code, Award, 
-    //  Github, Linkedin, Mail, Download 
-     Hand as Hello, LibraryBig as Studies, Lightbulb as Idea, Target as Aim,
-     UserRound,
-    } from "lucide-react"
+import type { SiteData } from "./types"
+import {
+  GraduationCap,
+  Briefcase,
+  Code,
+  Award,
+  Hand as Hello,
+  LibraryBig as Studies,
+  Lightbulb as Idea,
+  Target as Aim,
+  UserRound,
+} from "lucide-react"
 
 export const landing = [
 { title: "Gianluca Di Paola", subtitle: "Ingegnere Informatico"},
-]
+] satisfies SiteData["landing"]
 
 export const navItems = [
 { name: "Chi sono", id: "About", icon: UserRound },
@@ -14,13 +21,7 @@ export const navItems = [
 { name: "Progetti", id: "Projects", icon: Code },
 { name: "Esperienze", id: "Experience", icon: Briefcase },
 { name: "Certificazioni", id: "Certifications", icon: Award },
-]
-// export const navSocials = [
-//   { name: "GitHub", icon: Github, href: "https://github.com/gixium" },
-//   { name: "Scarica CV", icon: Download, href: "/gianluca_di_paola_cv.pdf", download: true },
-//   { name: "Email", icon: Mail, href: "mailto:ing@gianlucadipaola.com" },
-//   { name: "LinkedIn", icon: Linkedin, href: "https://linkedin.com/in/gianlucadipaola" },
-// ]
+] satisfies SiteData["navItems"]
 
 export const about = [
 { icon: Hello, 
@@ -31,7 +32,7 @@ export const about = [
     text: "Stare a contatto con i migliori professionisti nel proprio campo mi ha ispirato ad approfondire tematiche legate sia all'informatica che all'ingegneria, strizzando l'occhio al mondo del business e del management. Oltre alla tecnologia, sono molto interessato alla scienza in generale e a ciò che trovo curioso, cercando sempre di rimanere aggiornato sulle nuove innovazioni e scoperte."},
 { icon: Aim, 
     text: "Attualmente sono concentrato sui miei studi specialistici in Ingegneria Informatica, ICT, Business e Innovazione. Guardando al futuro, aspiro a lavorare in un contesto che valorizzi al meglio il mio percorso di studi."},
-]
+] satisfies SiteData["about"]
 
 export const education = [
 {
@@ -49,10 +50,9 @@ export const education = [
     description: "LSS Benedetto Croce",
     contents: [],
 }
-]
+] satisfies SiteData["education"]
 
 export const projects = [
-// colori disponibili: teal, purple, blue, red, pink, yellow
 {
   title: "Codex Naturalis",
   description: "Programmazione Distribuita Java",
@@ -70,7 +70,7 @@ export const projects = [
   badgeColor: "red",
 },
 {
-  title: "Deisgn Modulo FPGA",
+  title: "Design Modulo FPGA",
   description: "Progettazione di componenti elettronici",
   content: "Progetto di gruppo: sviluppo e progettazione di un modulo hardware VHDL completamente funzionante, per la sua perfetta integrazione con una RAM. Ottenuto un punteggio di 28/30.",
   link: "https://github.com/gixium/FPGA-Module-Design/",
@@ -101,7 +101,7 @@ export const projects = [
   badges: ["Python", "AI", "GPT"],
   badgeColor: "purple",
 },
-]
+] satisfies SiteData["projects"]
 
 export const experiences = [
 {
@@ -124,23 +124,13 @@ export const experiences = [
     description: "Regione Sicilia, ICS Maredolce",
     contents: ["Ho guidato il mio team durante il processo di analisi delle acque utilizzando bioindicatori, organizzando e manipolando in modo efficiente i dati in Excel e collaborando efficacemente."],
 },
-]
+] satisfies SiteData["experiences"]
 
 
 export const certifications = [
 {
     title: "Inglese C1 - QCER (CAE)",
     description: "CAMBRIDGE ENGLISH",
-    content: "Cerftificazione del livello di Inglese Avanzato",
+    content: "Certificazione del livello di Inglese Avanzato",
 },
-// {
-//     title: "Inglese B2 QCER (First)",
-//     description: "CAMBRIDGE ENGLISH",
-//     content: "Inglese di Livello Intermedio Superiore",
-// },
-// {
-//     title: "Inglese B1 QCER (Preliminary)",
-//     description: "CAMBRIDGE ENGLISH",
-//     content: "Inglese di Livello Intermedio",
-// },
-]
+] satisfies SiteData["certifications"]

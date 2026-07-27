@@ -1,12 +1,19 @@
-import { GraduationCap, Briefcase, Code, Award, 
-        //  Github, Linkedin, Mail, Download 
-         Hand as Hello, LibraryBig as Studies, Lightbulb as Idea, Target as Aim,
-         UserRound,
-        } from "lucide-react"
+import type { SiteData } from "./types"
+import {
+  GraduationCap,
+  Briefcase,
+  Code,
+  Award,
+  Hand as Hello,
+  LibraryBig as Studies,
+  Lightbulb as Idea,
+  Target as Aim,
+  UserRound,
+} from "lucide-react"
 
 export const landing = [
     { title: "Gianluca Di Paola", subtitle: "Computer Engineer"},
-]
+] satisfies SiteData["landing"]
 
 export const navItems = [
   { name: "About", id: "About", icon: UserRound },
@@ -14,13 +21,7 @@ export const navItems = [
   { name: "Projects", id: "Projects", icon: Code },
   { name: "Experience", id: "Experience", icon: Briefcase },
   { name: "Certifications", id: "Certifications", icon: Award },
-]
-// export const navSocials = [
-//   { name: "GitHub", icon: Github, href: "https://github.com/gixium" },
-//   { name: "Download CV", icon: Download, href: "/gianluca_di_paola_cv.pdf", download: true },
-//   { name: "Email", icon: Mail, href: "mailto:ing@gianlucadipaola.com" },
-//   { name: "LinkedIn", icon: Linkedin, href: "https://linkedin.com/in/gianlucadipaola" },
-// ]
+] satisfies SiteData["navItems"]
 
 export const about = [
     { icon: Hello, 
@@ -31,7 +32,7 @@ export const about = [
         text: "Being in contact with passionate professionals has inspired me to dive deeper into Computer Science and Engineering topics, while also keeping myself open to the world of Business and Management. Beyond technology, I am deeply interested in science in general and other curious topics; this is why I always try to stay up-to-date with new innovations and discoveries."},
     { icon: Aim, 
         text: "My current focus is directed towards completing my studies in Computer Engineering, ICT Engineering, Business and Innovation. Looking ahead, I aspire to find myself working for a company that best suits my studies."},
-]
+] satisfies SiteData["about"]
 
 export const education = [
     {
@@ -49,14 +50,13 @@ export const education = [
         description: "LSS Benedetto Croce",
         contents: [],
     }
-]
+] satisfies SiteData["education"]
 
 export const projects = [
-    // colori disponibili: teal, purple, blue, red, pink, yellow
     {
       title: "Codex Naturalis",
       description: "Java Distributed Programming",
-      content: "Team project: developed the digital version of a physical board game, using Java Distributed Prgramming. I provided the game with advanced funcionalities, such as the live chat, the game preservation in case of network problems, et al. The work was regarded with a final grade of 30/30 cum Laude.",
+      content: "Team project: developed the digital version of a physical board game, using Java Distributed Programming. I provided the game with advanced functionalities, such as the live chat, the game preservation in case of network problems, et al. The work was regarded with a final grade of 30/30 cum Laude.",
       link: "https://github.com/grecodavide/IS24-AM08",
       badges: ["Java", "JavaFX", "Maven", "TCP", "RMI", "MVC", "GUI/TUI", "IntelliJ IDEA"],
       badgeColor: "yellow",
@@ -101,7 +101,7 @@ export const projects = [
       badges: ["Python", "AI", "GPT"],
       badgeColor: "purple",
     },
-]
+] satisfies SiteData["projects"]
 
 export const experiences = [
     {
@@ -124,7 +124,7 @@ export const experiences = [
         description: "Sicily Region, ICS Maredolce",
         contents: ["I led my team during the water analysis process using bioindicators, proficiently organizing and manipulating data in Excel while collaborating effectively."],
     },
-]
+] satisfies SiteData["experiences"]
 
 
 export const certifications = [
@@ -133,14 +133,5 @@ export const certifications = [
         description: "CAMBRIDGE ENGLISH",
         content: "Advanced English",
     },
-    // {
-    //     title: "B2 CEFR English (First)",
-    //     description: "CAMBRIDGE ENGLISH",
-    //     content: "Upper Intermediate English",
-    // },
-    // {
-    //     title: "B1 CEFR English (Preliminary)",
-    //     description: "CAMBRIDGE ENGLISH",
-    //     content: "Intermediate English",
-    // },
-]
+] satisfies SiteData["certifications"]
+

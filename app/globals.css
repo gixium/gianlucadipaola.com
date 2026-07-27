@@ -75,12 +75,11 @@
   }
 }
 
-/* Smooth scrolling for the entire page */
 html {
   scroll-behavior: smooth;
 }
 
-/* Custom animations */
+/* Animations */
 @keyframes fadeInUp {
   from {
     opacity: 0;
@@ -111,57 +110,26 @@ html {
   animation: scaleIn 0.3s ease-out forwards;
 }
 
-/* Transition for dark mode */
+/* Dark mode transition override */
 .transition-colors {
   transition-property: background-color, border-color, color, fill, stroke;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 600ms;
 }
 
-/* Floating Navbar Styles */
-/* @media (max-width: 770px) {
-  body {
-    padding-bottom: 80px; 
-  }
-
-  .navbar-container {
-    flex-direction: column;
-  }
-
-  .navbar-container > div {
-    width: 60%;
-    width: 300px;
-  }
-
-  .navbar-container-bottom > div {
-    width: 60%;
-    width: 300px;
-  }
-}
-
-@media (min-width: 771px) {
-  .navbar-container-bottom > div {
-    transform: translateX(15px);
-  }
-} */
-
-/* Hide navbar on landing page */
+/* Navbar visibility */
 .landing-page .navbar-container {
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s ease-in-out;
 }
 
-/* Show navbar when scrolled */
 .navbar-container {
   opacity: 1;
   transition: opacity 0.3s ease-in-out;
 }
 
-.titolo-1 {
-  /* letter-spacing: -4px; */
-}
-
+/* Typography */
 .titolo-2 {
   font-size: 20px;
 }
@@ -175,22 +143,10 @@ html {
   font-weight: 500;
 }
 
+/* Layout helpers */
 .start {
   transform: translateY(80px);
 }
-
-/* Landing page background fade effect */
-/* .landing-bg {
-  opacity: 1;
-}
-
-.landing-page .landing-bg {
-  opacity: 1;
-}
-
-:not(.landing-page) .landing-bg {
-  opacity: 0;
-} */
 
 .flex-\[0_0_50\%\] {
   flex: 0 0 50%;
@@ -200,15 +156,4 @@ html {
   .flex-\[0_0_50\%\] {
     flex: 0 0 100%;
   }
-}
-
-.contenitore {
-  width: 235px;
-  height: auto;
-}
-
-.piccolo {
-  width: 160px;
-  align-items: center; 
-  height: auto;
 }

@@ -1,10 +1,9 @@
 "use client"
 
-import type React from "react"
-
 import { useState, useEffect, createContext, useContext } from "react"
+import type { ReactNode } from "react"
 
-type Language = "en" | "it"
+export type Language = "en" | "it"
 
 interface LanguageContextType {
   language: Language
@@ -14,34 +13,30 @@ interface LanguageContextType {
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined)
 
-export function LanguageProvider({ children }: { children: React.ReactNode }) {
+export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguage] = useState<Language>("en")
 
   useEffect(() => {
-    // Detect browser language on initial load
     const browserLang = navigator.language.split("-")[0]
-    const initialLang = browserLang === "it" ? "it" : "en"
+    const initialLang: Language = browserLang === "it" ? "it" : "en"
+    const savedLang = localStorage.getItem("language") as Language | null
 
-    // Check if there's a saved preference
-    const savedLang = localStorage.getItem("language") as Language
-
-    setLanguage(savedLang || initialLang)
+    setLanguage(savedLang ?? initialLang)
   }, [])
 
   useEffect(() => {
-    // Save language preference
     localStorage.setItem("language", language)
-
-    // Update html lang attribute
     document.documentElement.lang = language
   }, [language])
 
   const toggleLanguage = () => {
-    setLanguage(language === "it" ? "it" : "en")
+    setLanguage((prev) => (prev === "it" ? "en" : "it"))
   }
 
   return (
-    <LanguageContext.Provider value={{ language, setLanguage, toggleLanguage }}>{children}</LanguageContext.Provider>
+    <LanguageContext.Provider value={{ language, setLanguage, toggleLanguage }}>
+      {children}
+    </LanguageContext.Provider>
   )
 }
 

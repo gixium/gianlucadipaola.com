@@ -1,12 +1,10 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import { motion, useAnimation } from "motion/react"
-// import { Magnet } from "lucide-react"
+import { motion, useAnimation } from "framer-motion"
 import { useEffect, useState, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { useLanguage } from "@/hooks/use-language"
-import React from "react"
 
 interface Btn03Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   particleCount?: number
@@ -19,12 +17,15 @@ interface Particle {
   y: number
 }
 
-export default function Btn03({ className, particleCount = 12, ...props }: Btn03Props) {
+export default function Btn03({
+  className,
+  particleCount = 12,
+  ...props
+}: Btn03Props) {
   const [isAttracting, setIsAttracting] = useState(false)
   const [particles, setParticles] = useState<Particle[]>([])
   const particlesControl = useAnimation()
   const { language } = useLanguage()
-
 
   useEffect(() => {
     const newParticles = Array.from({ length: particleCount }, (_, i) => ({
@@ -50,9 +51,9 @@ export default function Btn03({ className, particleCount = 12, ...props }: Btn03
 
   const handleInteractionEnd = useCallback(async () => {
     setIsAttracting(false)
-    await particlesControl.start((i) => ({
-      x: particles[i].x,
-      y: particles[i].y,
+    await particlesControl.start((i: number) => ({
+      x: particles[i]?.x ?? 0,
+      y: particles[i]?.y ?? 0,
       transition: {
         type: "spring",
         stiffness: 100,
@@ -83,7 +84,7 @@ export default function Btn03({ className, particleCount = 12, ...props }: Btn03
         <motion.div
           key={index}
           custom={index}
-          initial={{ x: particles[index].x, y: particles[index].y }}
+          initial={{ x: particles[index]?.x ?? 0, y: particles[index]?.y ?? 0 }}
           animate={particlesControl}
           className={cn(
             "absolute w-1.5 h-1.5 rounded-full",
@@ -94,18 +95,8 @@ export default function Btn03({ className, particleCount = 12, ...props }: Btn03
         />
       ))}
       <span className="relative w-full flex items-center justify-center gap-2">
-        {/* <Magnet className={cn("w-4 h-4 transition-transform duration-300", isAttracting && "scale-110")} /> */}
-        {/* {isAttracting ? "Attracting" : "Hover me"} */}
         {language === "it" ? "Contattami" : "Contact me"}
       </span>
     </Button>
   )
 }
-
-    // import Btn03 from "@/components/ui/button-magnet"
-    // <Btn03 className="text-lg py-6" particleCount={16} attractRadius={60} />
-
-    // <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-teal-500 to-purple-600 opacity-5 dark:opacity-10 bg-f rounded-full flex-wrap gap"></div>
-    // <Btn03 className="font-semibold py-4 mr-2 rounded-full" particleCount={24} attractRadius={60} onClick={() => setContactOpen(true)} />
-    // <span> <item.icon className="h-5 w-5" /></span>
-
