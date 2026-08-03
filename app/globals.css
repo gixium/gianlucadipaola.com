@@ -75,8 +75,10 @@
   }
 }
 
-html {
-  scroll-behavior: smooth;
+@media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
 }
 
 /* Animations */
@@ -156,4 +158,20 @@ html {
   .flex-\[0_0_50\%\] {
     flex: 0 0 100%;
   }
+}
+
+/* Ghost blink animation (was <style jsx> in ghost-mesh-gradient.tsx) */
+@keyframes blink {
+  0%,
+  90%,
+  100% {
+    ry: 30;
+  }
+  95% {
+    ry: 3;
+  }
+}
+
+.animate-blink {
+  animation: blink 3s infinite ease-in-out;
 }

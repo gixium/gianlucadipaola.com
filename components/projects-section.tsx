@@ -18,6 +18,42 @@ interface ProjectsSectionProps {
   language: Language
 }
 
+// Defined at module level so React does not remount cards on every parent re-render.
+const ProjectCard = ({ project }: { project: ProjectItem }) => (
+  <Card className="bg-white dark:bg-gray-800 shadow-md transition-colors h-full flex flex-col">
+    <CardHeader className="flex-shrink-0">
+      <a
+        href={project.link}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-gray-800 dark:text-gray-200 hover:text-teal-500 dark:hover:text-teal-400 transition-colors titolo-2"
+      >
+        <CardTitle className="flex items-center gap-2">
+          <Github className="h-6 w-6" />
+          {project.title}
+        </CardTitle>
+        <CardDescription className="uppercase text-gray-600 dark:text-gray-400 font-semibold titolo-3 mt-1.5">
+          {project.description}
+        </CardDescription>
+      </a>
+    </CardHeader>
+    <CardContent className="text-gray-700 dark:text-gray-300 flex-grow flex flex-col justify-between">
+      <p className="mb-4">{project.content}</p>
+      <div className="flex flex-wrap gap-2 mt-auto pt-4">
+        {project.badges.map((badge, badgeIndex) => (
+          <Badge
+            key={badgeIndex}
+            variant="secondary"
+            className={getBadgeColorClasses(project.badgeColor)}
+          >
+            {badge}
+          </Badge>
+        ))}
+      </div>
+    </CardContent>
+  </Card>
+)
+
 export function ProjectsSection({ data, language }: ProjectsSectionProps) {
   const [isGridView, setIsGridView] = useState<boolean | null>(null)
   const [isMobile, setIsMobile] = useState(false)
@@ -146,42 +182,6 @@ export function ProjectsSection({ data, language }: ProjectsSectionProps) {
   }, [emblaApi, isMobile])
 
   const toggleView = () => setIsGridView((prev) => !prev)
-
-  // Project card component (shared between grid and carousel)
-  const ProjectCard = ({ project }: { project: ProjectItem }) => (
-    <Card className="bg-white dark:bg-gray-800 shadow-md transition-colors h-full flex flex-col">
-      <CardHeader className="flex-shrink-0">
-        <a
-          href={project.link}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-gray-800 dark:text-gray-200 hover:text-teal-500 dark:hover:text-teal-400 transition-colors titolo-2"
-        >
-          <CardTitle className="flex items-center gap-2">
-            <Github className="h-6 w-6" />
-            {project.title}
-          </CardTitle>
-          <CardDescription className="uppercase text-gray-600 dark:text-gray-400 font-semibold titolo-3 mt-1.5">
-            {project.description}
-          </CardDescription>
-        </a>
-      </CardHeader>
-      <CardContent className="text-gray-700 dark:text-gray-300 flex-grow flex flex-col justify-between">
-        <p className="mb-4">{project.content}</p>
-        <div className="flex flex-wrap gap-2 mt-auto pt-4">
-          {project.badges.map((badge, badgeIndex) => (
-            <Badge
-              key={badgeIndex}
-              variant="secondary"
-              className={getBadgeColorClasses(project.badgeColor)}
-            >
-              {badge}
-            </Badge>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
-  )
 
   return (
     <motion.section

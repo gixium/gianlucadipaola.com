@@ -15,8 +15,14 @@ export function ContactDialog({ open, onOpenChange, language }: ContactDialogPro
   const [email, setEmail] = useState<string | null>(null)
 
   useEffect(() => {
-    const b64 = "aW5nQGdpYW5sdWNhZGlwYW9sYS5jb20="
-    setEmail(atob(b64))
+    // Email assembled at runtime from separate fragments to hinder automated scrapers.
+    // Each piece is meaningless alone; the full address only exists in memory when the
+    // dialog is opened for the first time.
+    const p1 = "\x69\x6e\x67"         // "ing"
+    const p2 = "\x40"                  // "@"
+    const p3 = "gianluca"
+    const p4 = "dipaola.com"
+    setEmail([p1, p2, p3, p4].join(""))
   }, [])
 
   return (

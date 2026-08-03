@@ -106,20 +106,30 @@ export function GhostMeshGradient({ isDarkMode }: GhostMeshGradientProps) {
     }
 
     let rafId: number | null = null
+    let isPaused = false
+
     const tick = () => {
-      setEyeOffset(prev => {
-        const nx = prev.x + (eyeTarget.current.x - prev.x) * FOLLOW_SMOOTHNESS
-        const ny = prev.y + (eyeTarget.current.y - prev.y) * FOLLOW_SMOOTHNESS
-        return { x: nx, y: ny }
-      })
+      if (!isPaused) {
+        setEyeOffset(prev => {
+          const nx = prev.x + (eyeTarget.current.x - prev.x) * FOLLOW_SMOOTHNESS
+          const ny = prev.y + (eyeTarget.current.y - prev.y) * FOLLOW_SMOOTHNESS
+          return { x: nx, y: ny }
+        })
+      }
       rafId = requestAnimationFrame(tick)
     }
 
+    const handleVisibilityChange = () => {
+      isPaused = document.hidden
+    }
+
     window.addEventListener("pointermove", onPointerMove, { passive: true })
+    document.addEventListener("visibilitychange", handleVisibilityChange)
     rafId = requestAnimationFrame(tick)
 
     return () => {
       window.removeEventListener("pointermove", onPointerMove)
+      document.removeEventListener("visibilitychange", handleVisibilityChange)
       if (rafId) cancelAnimationFrame(rafId)
     }
   }, [])
@@ -292,22 +302,6 @@ export function GhostMeshGradient({ isDarkMode }: GhostMeshGradientProps) {
         </svg>
       </div>
 
-      <style jsx>{`
-        .animate-blink {
-          animation: blink 3s infinite ease-in-out;
-        }
-
-        @keyframes blink {
-          0%,
-          90%,
-          100% {
-            ry: 30;
-          }
-          95% {
-            ry: 3;
-          }
-        }
-      `}</style>
     </motion.div>
   )
 }

@@ -4,17 +4,11 @@ import { useState, useEffect, useRef } from "react"
 import { Sun, Moon, ChevronRight } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { cn } from "@/lib/utils"
-import { Pacifico } from "next/font/google"
 import { Button } from "@/components/ui/button"
 import Btn03 from "@/components/ui/button-magnet"
 import type { Language } from "@/hooks/use-language"
 import type { NavItem } from "@/lib/types"
-
-const titleFont = Pacifico({
-  subsets: ["latin"],
-  weight: ["400"],
-  variable: "--font-pacifico",
-})
+import { titleFont } from "@/lib/fonts"
 
 interface NavbarProps {
   navItems: readonly NavItem[]
@@ -30,7 +24,8 @@ function handleSmoothScroll(e: React.MouseEvent<HTMLAnchorElement>, id: string) 
   if (element) {
     const yOffset = -80
     const y = element.getBoundingClientRect().top + window.scrollY + yOffset
-    window.scrollTo({ top: y, behavior: "smooth" })
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    window.scrollTo({ top: y, behavior: reducedMotion ? "instant" : "smooth" })
     window.history.replaceState(null, "", `#${id}`)
   }
 }
