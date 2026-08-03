@@ -20,6 +20,7 @@ interface Particle {
 export default function Btn03({
   className,
   particleCount = 12,
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   attractRadius: _attractRadius,
   ...props
 }: Btn03Props) {

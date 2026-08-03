@@ -8,6 +8,10 @@ const config: Config = {
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
     "./lib/**/*.{js,ts,jsx,tsx}",
   ],
+  safelist: [
+    { pattern: /bg-(teal|purple|blue|red|pink|yellow)-(100|200|800|900)/ },
+    { pattern: /text-(teal|purple|blue|red|pink|yellow)-(100|200|800|900)/ },
+  ],
   theme: {
   	extend: {
   		colors: {
