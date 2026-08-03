@@ -9,11 +9,13 @@ import Btn03 from "@/components/ui/button-magnet"
 import type { Language } from "@/hooks/use-language"
 import type { NavItem } from "@/lib/types"
 import { titleFont } from "@/lib/fonts"
+import { APPLE_EASE } from "@/lib/motion"
 
 interface NavbarProps {
   navItems: readonly NavItem[]
   language: Language
   darkMode: boolean
+  isLandingPage: boolean
   onToggleDarkMode: () => void
   onContactOpen: () => void
 }
@@ -34,6 +36,7 @@ export function Navbar({
   navItems,
   language,
   darkMode,
+  isLandingPage,
   onToggleDarkMode,
   onContactOpen,
 }: NavbarProps) {
@@ -63,7 +66,15 @@ export function Navbar({
   }, [mobileMenuOpen])
 
   return (
-    <div className="fixed top-0 left-0 right-0 z-50 pointer-events-none animate-fadeIn navbar-container">
+    <motion.div
+      className="fixed top-0 left-0 right-0 z-50 pointer-events-none"
+      initial={false}
+      animate={{ 
+        opacity: isLandingPage ? 0 : 1, 
+        y: isLandingPage ? -16 : 0 
+      }}
+      transition={{ duration: 0.6, ease: APPLE_EASE }}
+    >
       <div className="container mx-auto px-2 sm:px-4 py-4">
         <div className="pointer-events-auto">
           <div className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-md rounded-full shadow-lg p-3 border border-gray-200/50 dark:border-gray-600/50 transition-colors duration-300">
@@ -96,9 +107,23 @@ export function Navbar({
                   transition={{ duration: 0.2 }}
                   className="hidden md:block w-auto"
                 >
-                  <ul className="flex space-x-4 lg:space-x-8">
+                  <motion.ul
+                    className="flex space-x-4 lg:space-x-8"
+                    initial="hidden"
+                    animate="visible"
+                    variants={{
+                      hidden: { opacity: 0 },
+                      visible: { opacity: 1, transition: { staggerChildren: 0.07, delayChildren: 0.15 } },
+                    }}
+                  >
                     {navItems.map((item) => (
-                      <li key={item.name}>
+                      <motion.li
+                        key={item.name}
+                        variants={{
+                          hidden: { opacity: 0, y: -8 },
+                          visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: APPLE_EASE } },
+                        }}
+                      >
                         <a
                           href={`#${item.name.toLowerCase()}`}
                           onClick={(e) =>
@@ -109,9 +134,9 @@ export function Navbar({
                           <item.icon className="h-5 w-5 hidden lg:inline" />
                           <span>{item.name}</span>
                         </a>
-                      </li>
+                      </motion.li>
                     ))}
-                  </ul>
+                  </motion.ul>
                 </motion.nav>
               </AnimatePresence>
 
@@ -200,6 +225,6 @@ export function Navbar({
           </div>
         </div>
       </div>
-    </div>
+    </motion.div>
   )
 }

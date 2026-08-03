@@ -12,6 +12,14 @@ import { Badge } from "@/components/ui/badge"
 import { getBadgeColorClasses } from "@/lib/badge-colors"
 import type { Language } from "@/hooks/use-language"
 import type { ProjectItem } from "@/lib/types"
+import {
+  sectionVariants,
+  headingVariants,
+  listVariants,
+  listItemVariants,
+  langFadeVariants,
+  cardHoverProps,
+} from "@/lib/motion"
 
 interface ProjectsSectionProps {
   data: readonly ProjectItem[]
@@ -96,7 +104,7 @@ export function ProjectsSection({ data, language }: ProjectsSectionProps) {
 
   const emblaPlugins = useMemo(
     () => [
-      Autoplay({ delay: 5000, stopOnMouseEnter: true, stopOnInteraction: true }),
+      Autoplay({ delay: 5000, stopOnMouseEnter: true, stopOnInteraction: false }),
       ...(isMobile ? [] : [WheelGesturesPlugin({ forceWheelAxis: "x" })]),
     ],
     [isMobile],
@@ -117,13 +125,11 @@ export function ProjectsSection({ data, language }: ProjectsSectionProps) {
 
   const scrollPrev = useCallback(() => {
     if (!emblaApi) return
-    emblaApi.plugins().autoplay?.stop()
     emblaApi.scrollPrev()
   }, [emblaApi])
 
   const scrollNext = useCallback(() => {
     if (!emblaApi) return
-    emblaApi.plugins().autoplay?.stop()
     emblaApi.scrollNext()
   }, [emblaApi])
 
@@ -187,19 +193,19 @@ export function ProjectsSection({ data, language }: ProjectsSectionProps) {
     <motion.section
       id="projects"
       className="scroll-mt-16"
-      initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.8, ease: "easeOut" }}
-      viewport={{ once: true }}
+      variants={sectionVariants}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, margin: "-80px" }}
     >
       <div className="flex justify-between items-center mb-8">
         <AnimatePresence mode="wait">
           <motion.h2
             key={`projects-title-${language}`}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: 20 }}
-            transition={{ duration: 0.3 }}
+            variants={headingVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
             className="text-3xl font-bold flex items-center text-gray-800 dark:text-gray-200"
           >
             <Code className="mr-2" />
@@ -230,43 +236,39 @@ export function ProjectsSection({ data, language }: ProjectsSectionProps) {
         {isGridView ? (
           <motion.div
             key={`projects-grid-${language}-${isGridView}`}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
+            variants={langFadeVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
           >
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={`grid-content-${language}`}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                className="grid grid-cols-1 md:grid-cols-2 gap-6"
-              >
-                {data.map((project, index) => (
-                  <motion.div
-                    key={index}
-                    whileHover={{ scale: 1.03 }}
-                    transition={{ duration: 0.3 }}
-                  >
-                    <ProjectCard project={project} />
-                  </motion.div>
-                ))}
-              </motion.div>
-            </AnimatePresence>
+            <motion.div
+              className="grid grid-cols-1 md:grid-cols-2 gap-6"
+              variants={listVariants}
+              initial="hidden"
+              animate="visible"
+            >
+              {data.map((project, index) => (
+                <motion.div
+                  key={index}
+                  variants={listItemVariants}
+                  {...cardHoverProps}
+                >
+                  <ProjectCard project={project} />
+                </motion.div>
+              ))}
+            </motion.div>
           </motion.div>
         ) : (
           <motion.div
             key={`projects-carousel-${language}-${isGridView}`}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
-            transition={{ duration: 0.3 }}
+            variants={langFadeVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
           >
             <div className="relative px-12">
               <div
-                className={`overflow-hidden ${
+                className={`overflow-hidden p-6 -m-6 ${
                   isMobile ? "cursor-grab active:cursor-grabbing" : ""
                 }`}
                 ref={setEmblaViewportRef}
@@ -277,10 +279,7 @@ export function ProjectsSection({ data, language }: ProjectsSectionProps) {
                       key={`${project.title}-${index}`}
                       className="flex-[0_0_50%] min-w-0 pl-4"
                     >
-                      <motion.div
-                        whileHover={{ scale: 1.03 }}
-                        transition={{ duration: 0.3 }}
-                      >
+                      <motion.div {...cardHoverProps}>
                         <ProjectCard project={project} />
                       </motion.div>
                     </div>

@@ -44,6 +44,14 @@ export default function Portfolio() {
   // Scroll tracking: navbar visibility + ghost easter egg
   // Uses a ref to avoid re-subscribing the listener on every scroll
   useEffect(() => {
+    // Initial check on mount to prevent flickering if loaded halfway down
+    const initialLanding = window.scrollY < 100
+    if (!initialLanding) {
+      setIsLandingPage(false)
+      isLandingRef.current = false
+      setShowGhost(true)
+    }
+
     let ticking = false
 
     const handleScroll = () => {
@@ -78,9 +86,7 @@ export default function Portfolio() {
 
   return (
     <div
-      className={`min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 transition-colors duration-300 pt-20 ${
-        isLandingPage ? "landing-page" : ""
-      }`}
+      className="min-h-screen bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200 transition-colors duration-300 pt-20"
       id="zenit-point"
     >
       {/* Navbar */}
@@ -88,6 +94,7 @@ export default function Portfolio() {
         navItems={data.navItems}
         language={language}
         darkMode={darkMode}
+        isLandingPage={isLandingPage}
         onToggleDarkMode={toggleDarkMode}
         onContactOpen={openContact}
       />

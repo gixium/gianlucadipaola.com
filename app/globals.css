@@ -81,22 +81,6 @@
   }
 }
 
-/* Animations */
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-fadeInUp {
-  animation: fadeInUp 0.5s ease-out forwards;
-}
-
 @keyframes scaleIn {
   from {
     opacity: 0;
@@ -119,17 +103,6 @@
   transition-duration: 600ms;
 }
 
-/* Navbar visibility */
-.landing-page .navbar-container {
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.3s ease-in-out;
-}
-
-.navbar-container {
-  opacity: 1;
-  transition: opacity 0.3s ease-in-out;
-}
 
 /* Typography */
 .titolo-2 {
