@@ -38,7 +38,12 @@ export default function Portfolio() {
   }, [])
 
   useEffect(() => {
+    document.documentElement.classList.add("theme-transition")
     document.documentElement.classList.toggle("dark", darkMode)
+    const timeout = setTimeout(() => {
+      document.documentElement.classList.remove("theme-transition")
+    }, 400)
+    return () => clearTimeout(timeout)
   }, [darkMode])
 
   // Scroll tracking: navbar visibility + ghost easter egg

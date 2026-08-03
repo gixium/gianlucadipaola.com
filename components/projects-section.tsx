@@ -69,25 +69,28 @@ export function ProjectsSection({ data, language }: ProjectsSectionProps) {
   const [prevBtnEnabled, setPrevBtnEnabled] = useState(false)
   const [nextBtnEnabled, setNextBtnEnabled] = useState(false)
 
-  // Detect mobile
+  // Detect mobile and narrow screens
   useEffect(() => {
-    const checkIfMobile = () => {
-      const mobile =
+    const checkScreenSize = () => {
+      const isNarrow = window.innerWidth < 768
+      setIsMobile(
         window.innerWidth < 1024 ||
-        "ontouchstart" in window ||
-        navigator.maxTouchPoints > 0
-      setIsMobile(mobile)
+          "ontouchstart" in window ||
+          navigator.maxTouchPoints > 0
+      )
+      
+      // Force grid view on narrow screens
+      if (isNarrow) {
+        setIsGridView(true)
+      } else if (isGridView === null) {
+        // Initial set for desktop
+        setIsGridView(false)
+      }
     }
-    checkIfMobile()
-    window.addEventListener("resize", checkIfMobile)
-    return () => window.removeEventListener("resize", checkIfMobile)
-  }, [])
-
-  // Set initial view based on device
-  useEffect(() => {
-    if (isGridView === null) {
-      setIsGridView(window.innerWidth < 768)
-    }
+    
+    checkScreenSize()
+    window.addEventListener("resize", checkScreenSize)
+    return () => window.removeEventListener("resize", checkScreenSize)
   }, [isGridView])
 
   // Embla options
@@ -213,7 +216,7 @@ export function ProjectsSection({ data, language }: ProjectsSectionProps) {
           </motion.h2>
         </AnimatePresence>
 
-        <div className="flex items-center text-sm text-gray-500 dark:text-gray-400">
+        <div className="hidden md:flex items-center text-sm text-gray-500 dark:text-gray-400">
           <motion.button
             onClick={toggleView}
             className="flex items-center space-x-1 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
