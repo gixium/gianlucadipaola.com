@@ -43,6 +43,11 @@ export function Navbar({
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const mobileMenuRef = useRef<HTMLDivElement>(null)
 
+  // With more than 5 items the desktop bar no longer fits between 768px and 1279px:
+  // switch to the hamburger menu below `lg` and show the icons only from `xl`.
+  // (Full class strings on purpose: Tailwind can only see complete literals.)
+  const manyItems = navItems.length > 5
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent | TouchEvent) => {
       if (
@@ -105,7 +110,7 @@ export function Navbar({
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                   transition={{ duration: 0.2 }}
-                  className="hidden md:block w-auto"
+                  className={manyItems ? "hidden lg:block w-auto" : "hidden md:block w-auto"}
                 >
                   <motion.ul
                     className="flex space-x-4 lg:space-x-8"
@@ -131,7 +136,7 @@ export function Navbar({
                           }
                           className="text-gray-700 dark:text-gray-300 hover:text-teal-500 dark:hover:text-teal-400 transition-colors flex items-center gap-2"
                         >
-                          <item.icon className="h-5 w-5 hidden lg:inline" />
+                          <item.icon className={manyItems ? "h-5 w-5 hidden xl:inline" : "h-5 w-5 hidden lg:inline"} />
                           <span>{item.name}</span>
                         </a>
                       </motion.li>
@@ -157,7 +162,7 @@ export function Navbar({
                 </Button>
 
                 {/* Mobile menu */}
-                <div className="relative md:hidden" ref={mobileMenuRef}>
+                <div className={manyItems ? "relative lg:hidden" : "relative md:hidden"} ref={mobileMenuRef}>
                   <Button
                     onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                     variant="outline"

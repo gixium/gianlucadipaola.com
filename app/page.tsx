@@ -11,6 +11,7 @@ import { Navbar } from "@/components/navbar"
 import { HeroSection } from "@/components/hero-section"
 import { AboutSection } from "@/components/about-section"
 import { EducationSection } from "@/components/education-section"
+import { PublicationsSection } from "@/components/publications-section"
 import { ProjectsSection } from "@/components/projects-section"
 import { ExperienceSection } from "@/components/experience-section"
 import { CertificationsSection } from "@/components/certifications-section"
@@ -132,6 +133,7 @@ export default function Portfolio() {
       <main className="container mx-auto px-4 py-16 space-y-32">
         <AboutSection data={data.about} language={language} />
         <EducationSection data={data.education} language={language} />
+        <PublicationsSection data={data.publications} language={language} />
         <ProjectsSection data={data.projects} language={language} />
         <ExperienceSection data={data.experiences} language={language} />
         <CertificationsSection data={data.certifications} language={language} />

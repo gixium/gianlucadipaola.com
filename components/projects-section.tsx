@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect, useCallback, useRef, useMemo } from "react"
-import { Code, Github, ChevronLeft, ChevronRight } from "lucide-react"
+import { Code, FileText, Github, ChevronLeft, ChevronRight } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
 import useEmblaCarousel from "embla-carousel-react"
 import Autoplay from "embla-carousel-autoplay"
@@ -27,40 +27,55 @@ interface ProjectsSectionProps {
 }
 
 // Defined at module level so React does not remount cards on every parent re-render.
-const ProjectCard = ({ project }: { project: ProjectItem }) => (
-  <Card className="bg-white dark:bg-gray-800 shadow-md transition-colors h-full flex flex-col">
-    <CardHeader className="flex-shrink-0">
-      <a
-        href={project.link}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-gray-800 dark:text-gray-200 hover:text-teal-500 dark:hover:text-teal-400 transition-colors titolo-2"
-      >
-        <CardTitle className="flex items-center gap-2">
-          <Github className="h-6 w-6" />
-          {project.title}
-        </CardTitle>
-        <CardDescription className="uppercase text-gray-600 dark:text-gray-400 font-semibold titolo-3 mt-1.5">
-          {project.description}
-        </CardDescription>
-      </a>
-    </CardHeader>
-    <CardContent className="text-gray-700 dark:text-gray-300 flex-grow flex flex-col justify-between">
-      <p className="mb-4">{project.content}</p>
-      <div className="flex flex-wrap gap-2 mt-auto pt-4">
-        {project.badges.map((badge, badgeIndex) => (
-          <Badge
-            key={badgeIndex}
-            variant="secondary"
-            className={getBadgeColorClasses(project.badgeColor)}
+const ProjectCard = ({ project }: { project: ProjectItem }) => {
+  // Icon follows the link type: GitHub repository, document (e.g. a PDF report), or none (no public material yet).
+  const Icon = !project.link ? Code : project.link.includes("github.com") ? Github : FileText
+
+  const header = (
+    <>
+      <CardTitle className="flex items-center gap-2">
+        <Icon className="h-6 w-6" />
+        {project.title}
+      </CardTitle>
+      <CardDescription className="uppercase text-gray-600 dark:text-gray-400 font-semibold titolo-3 mt-1.5">
+        {project.description}
+      </CardDescription>
+    </>
+  )
+
+  return (
+    <Card className="bg-white dark:bg-gray-800 shadow-md transition-colors h-full flex flex-col">
+      <CardHeader className="flex-shrink-0">
+        {project.link ? (
+          <a
+            href={project.link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-gray-800 dark:text-gray-200 hover:text-teal-500 dark:hover:text-teal-400 transition-colors titolo-2"
           >
-            {badge}
-          </Badge>
-        ))}
-      </div>
-    </CardContent>
-  </Card>
-)
+            {header}
+          </a>
+        ) : (
+          <div className="text-gray-800 dark:text-gray-200 titolo-2">{header}</div>
+        )}
+      </CardHeader>
+      <CardContent className="text-gray-700 dark:text-gray-300 flex-grow flex flex-col justify-between">
+        <p className="mb-4">{project.content}</p>
+        <div className="flex flex-wrap gap-2 mt-auto pt-4">
+          {project.badges.map((badge, badgeIndex) => (
+            <Badge
+              key={badgeIndex}
+              variant="secondary"
+              className={getBadgeColorClasses(project.badgeColor)}
+            >
+              {badge}
+            </Badge>
+          ))}
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
 
 export function ProjectsSection({ data, language }: ProjectsSectionProps) {
   const [isGridView, setIsGridView] = useState<boolean | null>(null)
