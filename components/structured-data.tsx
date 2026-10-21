@@ -11,7 +11,6 @@ export function StructuredData() {
         jobTitle: "Computer Engineer",
         url: "https://gianlucadipaola.com",
         image: "https://gianlucadipaola.com/preview.jpg",
-        email: "mailto:ing@gianlucadipaola.com",
         sameAs: [
           "https://github.com/gixium",
           "https://linkedin.com/in/gianlucadipaola",

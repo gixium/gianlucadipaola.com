@@ -58,6 +58,7 @@ export function ContactDialog({ open, onOpenChange, language }: ContactDialogPro
           <a
             href="/gianluca_di_paola_cv.pdf"
             download
+            rel="nofollow noopener noreferrer"
             className="flex items-center gap-3 p-3 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-gray-800 dark:text-gray-200"
           >
             <div className="p-2 rounded-full">
