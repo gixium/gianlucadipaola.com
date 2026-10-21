@@ -73,9 +73,12 @@ export function HeroSection({ data, language, onContactOpen }: HeroSectionProps)
           {data.map((item, index) => (
             <div key={index} className="flex flex-col items-center justify-center w-full">
               
-              {/* Name SVG Drawing Animation */}
+              {/* Name SVG Drawing Animation with accessible h1 */}
               <div className="relative w-full h-[80px] md:h-[120px] mb-4 flex items-center justify-center">
-                <svg className="w-full h-full overflow-visible">
+                <h1 className="sr-only">
+                  {item.title} — {item.subtitle}
+                </h1>
+                <svg className="w-full h-full overflow-visible" aria-hidden="true">
                   <motion.text
                     x="50%"
                     y="50%"
