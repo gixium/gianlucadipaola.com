@@ -1,5 +1,7 @@
 "use client"
 
+const SHOW_GHOST = true   // flag per spooky
+
 import { useState, useEffect, useCallback, useRef } from "react"
 import { AnimatePresence } from "framer-motion"
 import { useLanguage } from "@/hooks/use-language"
@@ -112,7 +114,7 @@ export default function Portfolio() {
 
       {/* Ghost Easter Egg */}
       <AnimatePresence>
-        {showGhost && <GhostMeshGradient isDarkMode={darkMode} />}
+        {SHOW_GHOST && showGhost && <GhostMeshGradient isDarkMode={darkMode} />}
       </AnimatePresence>
 
       {/* Contact Dialog */}

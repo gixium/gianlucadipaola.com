@@ -109,7 +109,7 @@ export function LanguagePicker({
       <div
         className={cn(
           "inline-flex gap-1 p-1.5 rounded-2xl border border-border/30 min-w-[180px]",
-          "bg-gray-50/50 dark:bg-gray-900/30 backdrop-blur-md supports-[backdrop-filter]:bg-gray-50/40 dark:supports-[backdrop-filter]:bg-gray-900/20",
+          "bg-gray-100/90 dark:bg-gray-900/80",
           "shadow-sm shadow-black/5 relative",
           "transition-shadow duration-300",
         )}

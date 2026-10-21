@@ -40,23 +40,22 @@ export function HeroSection({ data, language, onContactOpen }: HeroSectionProps)
   }
 
   const itemVariants: Variants = {
-    hidden: { opacity: 0, y: 20, filter: "blur(4px)" },
+    hidden: { opacity: 0, y: 20 },
     visible: {
       opacity: 1,
       y: 0,
-      filter: "blur(0px)",
       transition: { duration: 1.2, ease: [0.16, 1, 0.3, 1] as [number, number, number, number] }, // Apple-like spring ease
     },
   }
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden -mt-20">
-      {/* Background with delicate fade and subtle scale */}
+      {/* Background: fade-in solo opacity, nessuna scale (evita compositor layer su elemento grande) */}
       <motion.div
         className="absolute inset-0 z-0 origin-center pointer-events-none"
-        initial={{ opacity: 0, scale: 1.05 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 3.5, ease: "easeOut" }}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 2.5, ease: "easeOut" }}
       >
         <div className="absolute inset-0 bg-gradient-to-br from-teal-500/80 to-purple-600/80 opacity-10 dark:opacity-20" />
         <div className="absolute bottom-0 left-0 right-0 h-64 bg-gradient-to-t from-background to-transparent dark:from-slate-900" />
@@ -120,25 +119,26 @@ export function HeroSection({ data, language, onContactOpen }: HeroSectionProps)
                   particleCount={32}
                   attractRadius={60}
                   onClick={onContactOpen}
-                />
+                >
+                  {language === "it" ? "Contattami" : "Contact me"}
+                </Btn03>
               </motion.div>
             </div>
           ))}
 
           <motion.div variants={itemVariants} className="flex justify-center space-x-4 pt-12">
-            <motion.div
-              animate={{ y: [0, 15, 0] }}
-              transition={{ repeat: Number.POSITIVE_INFINITY, duration: 2.5, ease: "easeInOut" }}
-              className="inline-block cursor-pointer opacity-70 hover:opacity-100 transition-opacity"
+            <a
+              href="#start"
+              onClick={(e) => handleSmoothScroll(e, "start")}
+              className="inline-block cursor-pointer opacity-70 hover:opacity-100 transition-opacity animate-bounce-slow"
+              aria-label="Scroll down"
             >
-              <a href="#start" onClick={(e) => handleSmoothScroll(e, "start")}>
-                <ChevronsDown
-                  size={42}
-                  className="text-gray-900 dark:text-gray-100"
-                  strokeWidth={1.5}
-                />
-              </a>
-            </motion.div>
+              <ChevronsDown
+                size={42}
+                className="text-gray-900 dark:text-gray-100"
+                strokeWidth={1.5}
+              />
+            </a>
           </motion.div>
         </motion.div>
       </AnimatePresence>

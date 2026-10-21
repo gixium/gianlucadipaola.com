@@ -151,3 +151,16 @@
 .animate-blink {
   animation: blink 3s infinite ease-in-out;
 }
+
+/* Chevron bounce — CSS pura, zero Framer Motion loop.
+   Automaticamente disabilitata da prefers-reduced-motion. */
+@keyframes bounce-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(15px); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .animate-bounce-slow {
+    animation: bounce-slow 2.5s ease-in-out infinite;
+  }
+}

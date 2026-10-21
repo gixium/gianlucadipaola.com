@@ -1,6 +1,13 @@
 /**
  * Shared Framer Motion variants — Apple-style animation system.
  * Centralised here to ensure visual coherence across all sections.
+ *
+ * Performance notes:
+ * - No `filter: blur()` on scroll-driven variants: blur forces GPU compositing
+ *   layers on every child element, which is expensive on mobile and low-end
+ *   devices. Opacity + y translation is GPU-composited for free via `will-change`.
+ * - `langFadeVariants` retains a subtle blur only on language-switch (rare,
+ *   user-triggered), where the visual payoff justifies the cost.
  */
 import type { Variants } from "framer-motion"
 
@@ -10,15 +17,14 @@ export const APPLE_EASE = [0.16, 1, 0.3, 1] as [number, number, number, number]
 // ─── Section-level ────────────────────────────────────────────────────────────
 
 /**
- * Fade-in-up with blur for the section wrapper.
+ * Fade-in-up for the section wrapper.
  * Use with `whileInView` + `viewport={{ once: true, margin: "-80px" }}`.
  */
 export const sectionVariants: Variants = {
-  hidden: { opacity: 0, y: 40, filter: "blur(6px)" },
+  hidden: { opacity: 0, y: 40 },
   visible: {
     opacity: 1,
     y: 0,
-    filter: "blur(0px)",
     transition: { duration: 0.9, ease: APPLE_EASE },
   },
 }
@@ -36,11 +42,10 @@ export const listVariants: Variants = {
 
 /** Single child inside a stagger list */
 export const listItemVariants: Variants = {
-  hidden: { opacity: 0, y: 24, filter: "blur(4px)" },
+  hidden: { opacity: 0, y: 24 },
   visible: {
     opacity: 1,
     y: 0,
-    filter: "blur(0px)",
     transition: { duration: 0.7, ease: APPLE_EASE },
   },
 }
@@ -49,18 +54,21 @@ export const listItemVariants: Variants = {
 
 /** Section heading — slides gently up from below */
 export const headingVariants: Variants = {
-  hidden: { opacity: 0, y: 16, filter: "blur(3px)" },
+  hidden: { opacity: 0, y: 16 },
   visible: {
     opacity: 1,
     y: 0,
-    filter: "blur(0px)",
     transition: { duration: 0.6, ease: APPLE_EASE },
   },
 }
 
 // ─── Language-change swap ──────────────────────────────────────────────────────
 
-/** Soft cross-fade for content that changes when language switches */
+/**
+ * Soft cross-fade for content that changes when language switches.
+ * Blur is intentional here: it's user-triggered (rare) and brief,
+ * giving a tactile "swap" feel that pure opacity can't match.
+ */
 export const langFadeVariants: Variants = {
   hidden: { opacity: 0, filter: "blur(3px)" },
   visible: {

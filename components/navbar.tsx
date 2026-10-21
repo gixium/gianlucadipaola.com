@@ -224,7 +224,9 @@ export function Navbar({
                   particleCount={24}
                   attractRadius={60}
                   onClick={onContactOpen}
-                />
+                >
+                  {language === "it" ? "Contattami" : "Contact me"}
+                </Btn03>
               </div>
             </div>
           </div>

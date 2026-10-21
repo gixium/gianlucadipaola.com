@@ -5,7 +5,7 @@ import type { ReactNode } from "react"
 import { LanguageProvider } from "@/hooks/use-language"
 import { StructuredData } from "@/components/structured-data"
 
-const inter = Inter({ subsets: ["latin"] })
+const inter = Inter({ subsets: ["latin"], display: "optional" })
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://gianlucadipaola.com"),

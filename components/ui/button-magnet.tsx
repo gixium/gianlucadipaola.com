@@ -4,7 +4,6 @@ import { cn } from "@/lib/utils"
 import { motion, useAnimation } from "framer-motion"
 import { useEffect, useState, useCallback } from "react"
 import { Button } from "@/components/ui/button"
-import { useLanguage } from "@/hooks/use-language"
 
 interface Btn03Props extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   particleCount?: number
@@ -17,17 +16,24 @@ interface Particle {
   y: number
 }
 
+/**
+ * Magnetic button with particle effect.
+ * Accepts standard button children — the caller is responsible for
+ * providing the label text (e.g. translated). This avoids coupling
+ * the component to the language context and prevents unnecessary
+ * re-renders on language changes.
+ */
 export default function Btn03({
   className,
   particleCount = 12,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   attractRadius: _attractRadius,
+  children,
   ...props
 }: Btn03Props) {
   const [isAttracting, setIsAttracting] = useState(false)
   const [particles, setParticles] = useState<Particle[]>([])
   const particlesControl = useAnimation()
-  const { language } = useLanguage()
 
   useEffect(() => {
     const newParticles = Array.from({ length: particleCount }, (_, i) => ({
@@ -97,7 +103,7 @@ export default function Btn03({
         />
       ))}
       <span className="relative w-full flex items-center justify-center gap-2">
-        {language === "it" ? "Contattami" : "Contact me"}
+        {children}
       </span>
     </Button>
   )

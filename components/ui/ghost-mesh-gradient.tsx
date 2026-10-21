@@ -4,9 +4,15 @@ import { MeshGradient } from "@paper-design/shaders-react"
 import { motion, AnimatePresence } from "framer-motion"
 import { useState, useEffect, useRef } from "react"
 
-const EYE_MAX_OFFSET = 14;      // ampiezza massima dello sguardo in px
-const FOLLOW_SMOOTHNESS = 0.5; // 0..1 (più grande = più reattivo, più piccolo = più morbido)
-const TOUCH_WOBBLE_MS = 2200;   // intervallo “respiro” su touch (ms)
+const EYE_MAX_OFFSET = 14      // ampiezza massima dello sguardo in px
+const FOLLOW_SMOOTHNESS = 0.5  // 0..1 (più grande = più reattivo)
+const TOUCH_WOBBLE_MS = 2200   // intervallo "respiro" su touch (ms)
+
+// Sotto questa soglia (px) il RAF non chiama setState → zero re-render inutili
+const EYE_DEAD_ZONE = 0.08
+
+// Sotto questa soglia (px) il RAF si mette in sleep fino al prossimo pointermove
+const EYE_SLEEP_THRESHOLD = 0.01
 
 const isTouchDevice = () =>
   typeof window !== "undefined" &&
@@ -29,67 +35,46 @@ export function GhostMeshGradient({ isDarkMode }: GhostMeshGradientProps) {
     "#0F172A", // Midnight Slate
   ]
 
-  // Path del fantasma + SVG per la mask (serve a Safari)
-  const ghostPath = "M230.809 115.385V249.411C230.809 269.923 214.985 287.282 194.495 288.411C184.544 288.949 175.364 285.718 168.26 280C159.746 273.154 147.769 273.461 139.178 280.23C132.638 285.384 124.381 288.462 115.379 288.462C106.377 288.462 98.1451 285.384 91.6055 280.23C82.912 273.385 70.9353 273.385 62.2415 280.23C55.7532 285.334 47.598 288.411 38.7246 288.462C17.4132 288.615 0 270.667 0 249.359V115.385C0 51.6667 51.6756 0 115.404 0C179.134 0 230.809 51.6667 230.809 115.385Z";
+  const ghostPath = "M230.809 115.385V249.411C230.809 269.923 214.985 287.282 194.495 288.411C184.544 288.949 175.364 285.718 168.26 280C159.746 273.154 147.769 273.461 139.178 280.23C132.638 285.384 124.381 288.462 115.379 288.462C106.377 288.462 98.1451 285.384 91.6055 280.23C82.912 273.385 70.9353 273.385 62.2415 280.23C55.7532 285.334 47.598 288.411 38.7246 288.462C17.4132 288.615 0 270.667 0 249.359V115.385C0 51.6667 51.6756 0 115.404 0C179.134 0 230.809 51.6667 230.809 115.385Z"
 
-  // DataURL dell'SVG usato come mask (bianco = visibile)
   const maskSvgDataUrl = `data:image/svg+xml;utf8,` +
     encodeURIComponent(`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 231 289">
       <path fill="white" d="${ghostPath}"/>
-    </svg>`);
+    </svg>`)
 
-
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const [isSmiling, setIsSmiling] = useState(false)
   const [mounted, setMounted] = useState(false)
   const [showGhost, setShowGhost] = useState(false)
-  // E  ye movement
-  const eyeTarget = useRef({ x: 0, y: 0 }) // Posizione “desiderata” degli occhi (usata per la rincorsa smooth)
-  const [eyeOffset, setEyeOffset] = useState({ x: 0, y: 0 }) // Stato che guida il rendering
-  const containerRef = useRef<HTMLDivElement | null>(null) // Ref al contenitore di Spooky (serve per calcolare il centro)
-  
+  const [shaderPaused, setShaderPaused] = useState(false)
+
+  // Eye movement — tutto tracciato come ref, setState solo sopra la dead zone
+  const eyeTarget = useRef({ x: 0, y: 0 })
+  const eyeCurrent = useRef({ x: 0, y: 0 })
+  const [eyeOffset, setEyeOffset] = useState({ x: 0, y: 0 })
+  const containerRef = useRef<HTMLDivElement | null>(null)
+
+  // Ref per il controllo del RAF: il loop si "mette in sleep" quando è già converso
+  const rafId = useRef<number | null>(null)
+  const rafSleeping = useRef(false)
+
   useEffect(() => {
     setMounted(true)
-    // Delay ghost appearance by 3 seconds
-    const timer = setTimeout(() => {
-      setShowGhost(true)
-    }, 3000)
-
+    const timer = setTimeout(() => setShowGhost(true), 3000)
     return () => clearTimeout(timer)
   }, [])
 
   const eyeColor = isDarkMode ? "#111827" : "#F9FAFB"
 
-  useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY })
-    }
-
-    window.addEventListener("mousemove", handleMouseMove)
-    return () => window.removeEventListener("mousemove", handleMouseMove)
-  }, [])
-
-  useEffect(() => {
-    const ghostElement = document.querySelector(".ghost-container")
-    const rect = ghostElement?.getBoundingClientRect()
-    if (rect) {
-      const centerX = rect.left + rect.width / 2
-      const centerY = rect.top + rect.height / 2
-
-      const deltaX = (mousePosition.x - centerX) * 0.2
-      const deltaY = (mousePosition.y - centerY) * 0.2
-
-      const maxOffset = 25
-      setEyeOffset({
-        x: Math.max(-maxOffset, Math.min(maxOffset, deltaX)),
-        y: Math.max(-maxOffset, Math.min(maxOffset, deltaY)),
-      })
-    }
-  }, [mousePosition])
-
-  // Desktop: segui il mouse con inerzia (lerp) + rAF
+  // Desktop: pointermove + RAF con sleep quando converso
   useEffect(() => {
     if (isTouchDevice() || prefersReducedMotion()) return
+
+    const wakeRaf = () => {
+      if (rafSleeping.current) {
+        rafSleeping.current = false
+        tick()
+      }
+    }
 
     const onPointerMove = (e: PointerEvent) => {
       const rect = containerRef.current?.getBoundingClientRect()
@@ -98,43 +83,58 @@ export function GhostMeshGradient({ isDarkMode }: GhostMeshGradientProps) {
       const cy = rect.top + rect.height / 2
       const dx = e.clientX - cx
       const dy = e.clientY - cy
-
-      // normalizza e limita l’ampiezza
       const scale = EYE_MAX_OFFSET / Math.min(rect.width, rect.height)
       eyeTarget.current.x = Math.max(-EYE_MAX_OFFSET, Math.min(EYE_MAX_OFFSET, dx * scale))
       eyeTarget.current.y = Math.max(-EYE_MAX_OFFSET, Math.min(EYE_MAX_OFFSET, dy * scale))
+      wakeRaf()
     }
 
-    let rafId: number | null = null
     let isPaused = false
 
     const tick = () => {
-      if (!isPaused) {
-        setEyeOffset(prev => {
-          const nx = prev.x + (eyeTarget.current.x - prev.x) * FOLLOW_SMOOTHNESS
-          const ny = prev.y + (eyeTarget.current.y - prev.y) * FOLLOW_SMOOTHNESS
-          return { x: nx, y: ny }
-        })
+      if (isPaused) {
+        rafSleeping.current = true
+        return
       }
-      rafId = requestAnimationFrame(tick)
+
+      const nx = eyeCurrent.current.x + (eyeTarget.current.x - eyeCurrent.current.x) * FOLLOW_SMOOTHNESS
+      const ny = eyeCurrent.current.y + (eyeTarget.current.y - eyeCurrent.current.y) * FOLLOW_SMOOTHNESS
+
+      const dx = Math.abs(nx - eyeCurrent.current.x)
+      const dy = Math.abs(ny - eyeCurrent.current.y)
+
+      if (dx > EYE_DEAD_ZONE || dy > EYE_DEAD_ZONE) {
+        eyeCurrent.current = { x: nx, y: ny }
+        setEyeOffset({ x: nx, y: ny })
+      }
+
+      // Se il movimento è trascurabile: metti in sleep, risvegliato dal prossimo pointermove
+      if (dx < EYE_SLEEP_THRESHOLD && dy < EYE_SLEEP_THRESHOLD) {
+        rafSleeping.current = true
+        return
+      }
+
+      rafId.current = requestAnimationFrame(tick)
     }
 
     const handleVisibilityChange = () => {
       isPaused = document.hidden
+      setShaderPaused(document.hidden)
+      if (!isPaused) wakeRaf()
     }
 
     window.addEventListener("pointermove", onPointerMove, { passive: true })
     document.addEventListener("visibilitychange", handleVisibilityChange)
-    rafId = requestAnimationFrame(tick)
+    rafId.current = requestAnimationFrame(tick)
 
     return () => {
       window.removeEventListener("pointermove", onPointerMove)
       document.removeEventListener("visibilitychange", handleVisibilityChange)
-      if (rafId) cancelAnimationFrame(rafId)
+      if (rafId.current) cancelAnimationFrame(rafId.current)
     }
   }, [])
 
-  // Touch: oscilla piano (“respiro”) e guarda il tap per ~1s
+  // Touch: oscilla piano ("respiro") e guarda il tap per ~1s
   useEffect(() => {
     if (!isTouchDevice() || prefersReducedMotion()) return
 
@@ -142,8 +142,8 @@ export function GhostMeshGradient({ isDarkMode }: GhostMeshGradientProps) {
 
     const wobble = () => {
       const angle = Math.random() * Math.PI * 2
-      const radius = EYE_MAX_OFFSET * 0.5  // ampiezza del respiro
-      const jitter = 2 + Math.random() * 4 // piccolo tremolio naturale
+      const radius = EYE_MAX_OFFSET * 0.5
+      const jitter = 2 + Math.random() * 4
       setEyeOffset({
         x: Math.cos(angle) * radius + (Math.random() - 0.5) * jitter,
         y: Math.sin(angle) * radius + (Math.random() - 0.5) * jitter,
@@ -153,7 +153,6 @@ export function GhostMeshGradient({ isDarkMode }: GhostMeshGradientProps) {
 
     wobble()
 
-    // Al tocco guarda il punto per 1.2s, poi torna al respiro
     const onTouchStart = (e: TouchEvent) => {
       const touch = e.touches[0]
       const rect = containerRef.current?.getBoundingClientRect()
@@ -171,14 +170,18 @@ export function GhostMeshGradient({ isDarkMode }: GhostMeshGradientProps) {
       timer = window.setTimeout(wobble, 1200)
     }
 
+    // Pausa shader quando il tab è nascosto (risparmio GPU su mobile)
+    const handleVisibilityChange = () => setShaderPaused(document.hidden)
+
     window.addEventListener("touchstart", onTouchStart, { passive: true })
+    document.addEventListener("visibilitychange", handleVisibilityChange)
 
     return () => {
       if (timer) clearTimeout(timer)
       window.removeEventListener("touchstart", onTouchStart)
+      document.removeEventListener("visibilitychange", handleVisibilityChange)
     }
   }, [])
-
 
   const handleClick = () => {
     setIsSmiling(true)
@@ -211,9 +214,7 @@ export function GhostMeshGradient({ isDarkMode }: GhostMeshGradientProps) {
         filter: "drop-shadow(0 4px 12px rgba(0, 0, 0, 0.25))",
       }}
     >
-      {/* Safari/iOS friendly: niente foreignObject, mask CSS + overlay SVG */}
       <div ref={containerRef} className="relative w-full" style={{ aspectRatio: "231 / 289" }}>
-        {/* Riempimento colorato: MeshGradient ritagliato dalla mask del fantasma */}
         <div
           className="absolute inset-0"
           style={{
@@ -227,10 +228,10 @@ export function GhostMeshGradient({ isDarkMode }: GhostMeshGradientProps) {
             maskPosition: "center",
           }}
         >
-          <MeshGradient colors={colors} className="w-full h-full" speed={0.3} />
+          {/* speed=0 quando il tab è nascosto: ferma il render loop WebGL */}
+          <MeshGradient colors={colors} className="w-full h-full" speed={shaderPaused ? 0 : 0.3} />
         </div>
 
-        {/* Overlay vettoriale per occhi / “smile” (nessun foreignObject) */}
         <svg
           xmlns="http://www.w3.org/2000/svg"
           viewBox="0 0 231 289"
@@ -246,21 +247,8 @@ export function GhostMeshGradient({ isDarkMode }: GhostMeshGradientProps) {
                 exit={{ opacity: 0, scale: 0.8 }}
                 transition={{ duration: 0.15, ease: "anticipate" }}
               >
-                {/* occhi “chiusi” a sorriso */}
-                <path
-                  d="M 60 120 Q 80 100 100 120"
-                  stroke={eyeColor}
-                  strokeWidth="16"
-                  fill="none"
-                  strokeLinecap="round"
-                />
-                <path
-                  d="M 130 120 Q 150 100 170 120"
-                  stroke={eyeColor}
-                  strokeWidth="16"
-                  fill="none"
-                  strokeLinecap="round"
-                />
+                <path d="M 60 120 Q 80 100 100 120" stroke={eyeColor} strokeWidth="16" fill="none" strokeLinecap="round" />
+                <path d="M 130 120 Q 150 100 170 120" stroke={eyeColor} strokeWidth="16" fill="none" strokeLinecap="round" />
               </motion.g>
             ) : (
               <motion.g
@@ -270,38 +258,21 @@ export function GhostMeshGradient({ isDarkMode }: GhostMeshGradientProps) {
                 exit={{ opacity: 0, scale: 0.8 }}
                 transition={{ duration: 0.15, ease: "anticipate" }}
               >
-                {/* occhi “aperti” che seguono il puntatore */}
                 <motion.ellipse
-                  rx="20"
-                  ry="30"
-                  fill={eyeColor}
-                  className="animate-blink"
-                  // posizione reattiva: aggiungi una leggera attenuazione se vuoi
-                  animate={{
-                    cx: 80 + eyeOffset.x,
-                    cy: 120 + eyeOffset.y,
-                  }}
-                  // regolazione rimbalzo occhi (-stiffness = -molla ; +dampling = +fluidità)
-                  transition={{ type: "spring", stiffness: 350, damping: 25 }} 
+                  rx="20" ry="30" fill={eyeColor} className="animate-blink"
+                  animate={{ cx: 80 + eyeOffset.x, cy: 120 + eyeOffset.y }}
+                  transition={{ type: "spring", stiffness: 350, damping: 25 }}
                 />
                 <motion.ellipse
-                  rx="20"
-                  ry="30"
-                  fill={eyeColor}
-                  className="animate-blink"
-                  animate={{
-                    cx: 150 + eyeOffset.x,
-                    cy: 120 + eyeOffset.y,
-                  }}
-                  // regolazione rimbalzo occhi (-stiffness = -molla ; +dampling = +fluidità)
-                  transition={{ type: "spring", stiffness: 350, damping: 25 }} 
+                  rx="20" ry="30" fill={eyeColor} className="animate-blink"
+                  animate={{ cx: 150 + eyeOffset.x, cy: 120 + eyeOffset.y }}
+                  transition={{ type: "spring", stiffness: 350, damping: 25 }}
                 />
               </motion.g>
             )}
           </AnimatePresence>
         </svg>
       </div>
-
     </motion.div>
   )
 }
